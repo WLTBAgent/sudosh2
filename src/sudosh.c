@@ -151,7 +151,7 @@ int main(int argc, char *argv[], char *environ[]) {
     exit(EXIT_FAILURE);
   }
 
-  strncpy(user.to, user.pw->pw_name, BUFSIZ - 1);
+  snprintf(user.to, BUFSIZ, "%s", user.pw->pw_name);
 
   user.term.ptr = getenv("TERM");
 
@@ -168,9 +168,9 @@ int main(int argc, char *argv[], char *environ[]) {
     switch (c) {
     case 'c':
       //              fprintf(stderr,"optarg is [%s]\n",optarg);
-      strncpy(user.from, user.pw->pw_name, BUFSIZ - 1);
-      strncpy(c_str, optarg, BUFSIZ - 1);
-      strncpy(c_command, optarg, BUFSIZ - 1);
+      snprintf(user.from, BUFSIZ, "%s", user.pw->pw_name);
+      snprintf(c_str, BUFSIZ, "%s", optarg);
+      snprintf(c_command, BUFSIZ, "%s", optarg);
       p = strchr(c_str, ' ');
       if (p) {
         p[0] = 0;
@@ -265,7 +265,7 @@ int main(int argc, char *argv[], char *environ[]) {
         fprintf(stderr, "I have no idea who you are.\n");
         exit(EXIT_FAILURE);
       }
-      strncpy(user.from, getpwuid(ttybuf.st_uid)->pw_name, BUFSIZ - 1);
+      snprintf(user.from, BUFSIZ, "%s", getpwuid(ttybuf.st_uid)->pw_name);
     } else {
       fprintf(stderr, "Couldn't stat %s\n", ttyname(0));
       exit(EXIT_FAILURE);
@@ -277,7 +277,7 @@ int main(int argc, char *argv[], char *environ[]) {
   user.pw = getpwuid((uid_t)getuid());
 
   snprintf(user.home.str, BUFSIZ - 1, "HOME=%s", user.pw->pw_dir);
-  strncpy(user.to_home.str, user.pw->pw_dir, BUFSIZ - 1);
+  snprintf(user.to_home.str, BUFSIZ, "%s", user.pw->pw_dir);
   snprintf(user.term.str, BUFSIZ - 1, "TERM=%s", user.term.ptr);
 
 #ifdef HAVE_GETUSERSHELL
@@ -529,7 +529,7 @@ static void prepchild(struct pst *pst) {
     bye(EXIT_FAILURE);
   }
 
-  strncpy(newargv, user.shell.ptr, BUFSIZ - 1);
+  snprintf(newargv, BUFSIZ, "%s", user.shell.ptr);
 
   if ((b = strrchr(newargv, '/')) == NULL)
     b = newargv;

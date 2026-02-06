@@ -136,7 +136,7 @@ main (int argc, char **argv, char **environ)
 	  exit (EXIT_SUCCESS);
 	  break;
 	case 'd':
-	  strncpy (config_option.logdir, optarg, BUFSIZ - 1);
+	  snprintf (config_option.logdir, BUFSIZ, "%s", optarg);
 	  break;
 	default:
 	  fprintf (stderr, "%s: unrecognized option `%c'\n", progname, c);
@@ -223,10 +223,10 @@ main (int argc, char **argv, char **environ)
 	      if (ptr != (char *) 0)
 		*ptr++ = '\0';
 
-	      strncpy (s->from, from, BUFSIZ - 1);
-	      strncpy (s->to, to, BUFSIZ - 1);
-	      strncpy (s->type, type, BUFSIZ - 1);
-	      strncpy (s->randstr, randstr, BUFSIZ - 1);
+	      snprintf (s->from, BUFSIZ, "%s", from);
+	      snprintf (s->to, BUFSIZ, "%s", to);
+	      snprintf (s->type, BUFSIZ, "%s", type);
+	      snprintf (s->randstr, BUFSIZ, "%s", randstr);
 	      strftime (s->date, 20, "%m/%d/%Y %H:%M:%S", localtime (&s->e));
 	      link_session (s);
 	    }
@@ -252,10 +252,10 @@ main (int argc, char **argv, char **environ)
 	    }
 
 	  s->e = e;
-	  strncpy (s->from, from, BUFSIZ);
-	  strncpy (s->to, to, BUFSIZ );
-	  strncpy (s->type, type, BUFSIZ);
-	  strncpy (s->randstr, randstr, BUFSIZ);
+	  snprintf (s->from, BUFSIZ, "%s", from);
+	  snprintf (s->to, BUFSIZ, "%s", to);
+	  snprintf (s->type, BUFSIZ, "%s", type);
+	  snprintf (s->randstr, BUFSIZ, "%s", randstr);
 	  strftime (s->date, 20, "%m/%d/%Y %H:%M:%S", localtime (&s->e));
 	  snprintf (s->id, BUFSIZ - 1, "%.128s%c%.128s%c%ld%c%.128s", s->from,
 		    config_option.fdl, s->to, config_option.fdl, s->e,
