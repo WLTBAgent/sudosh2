@@ -10,7 +10,7 @@ AC_CANONICAL_TARGET
 # test "$sysconfdir" = '${prefix}/etc' && sysconfdir='/etc'
 
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE(sudosh2, 1.0.7)
+AM_INIT_AUTOMAKE
 AC_PROG_CC
 
 recordinput=0
@@ -82,7 +82,6 @@ m4_warn([obsolete],
   ISO C90 headers unconditionally.])dnl
 # Autoupdate added the next two lines to ensure that your configure
 # script's behavior did not change.  They are probably safe to remove.
-AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 
 
