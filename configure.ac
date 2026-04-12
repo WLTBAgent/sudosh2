@@ -90,6 +90,7 @@ AC_CHECK_HEADERS(sgtty.h pty.h signal.h time.h sys/time.h fcntl.h stropts.h)
 AC_CHECK_HEADERS(util.h termios.h sys/termios.h sys/types.h libutil.h)
 AC_CHECK_HEADERS(features.h sys/ioctl.h pwd.h syslog.h usersec.h)
 AC_CHECK_HEADERS(limits.h sys/stat.h sys/param.h dirent.h ctype.h strings.h)
+AC_CHECK_HEADERS([linux/fs.h], [], [], [#include <sys/ioctl.h>])
 
 AC_CHECK_FUNCS(openpty, openpty=1, openpty=0)
 AC_CHECK_FUNCS([getusershell gettimeofday])

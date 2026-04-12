@@ -22,7 +22,21 @@ PURPOSE.  See the Open Software License for details.
 #include "struct.h"
 #include "super.h"
 #ifdef __linux__
+#include <sys/ioctl.h>
+#ifdef HAVE_LINUX_FS_H
 #include <linux/fs.h>
+#else
+/* Fallback definitions for systems without <linux/fs.h> (e.g., musl libc) */
+#ifndef FS_IOC_GETFLAGS
+#define FS_IOC_GETFLAGS _IOR('f', 1, long)
+#endif
+#ifndef FS_IOC_SETFLAGS
+#define FS_IOC_SETFLAGS _IOW('f', 2, long)
+#endif
+#ifndef FS_APPEND_FL
+#define FS_APPEND_FL 0x00000020
+#endif
+#endif
 #endif
 
 #ifndef SIGCHLD

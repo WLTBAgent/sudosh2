@@ -71,7 +71,7 @@ jobs:
               INSTALL="zypper -n refresh && zypper -n install gcc make autoconf automake"
               ;;
             emerge)
-              INSTALL="emerge --sync 2>/dev/null; emerge -q sys-devel/gcc sys-devel/autoconf sys-devel/automake"
+              INSTALL="emerge --sync 2>/dev/null; emerge -q1 sys-apps/portage 2>/dev/null; emerge -q sys-devel/gcc sys-devel/autoconf sys-devel/automake"
               ;;
           esac
 
