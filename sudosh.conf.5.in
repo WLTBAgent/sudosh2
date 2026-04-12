@@ -43,7 +43,13 @@ Use this option to set which syslog facility sudosh will use.  The default is LO
 .IP "-c arg allow"
 .RS
 -c arg allow = command
-This option can be used multiple times.  If you wish to use sudosh as a default login shell and want to allow users to copy files, you can allow them to use commands such as rsync and scp.  For each command you want to allow, use a new line and option. To allow all commands, use the special value of *.
+This option can be used multiple times.  If you wish to use sudosh as a default login shell and want to allow users to copy files, you can allow them to use commands such as rsync, scp, and sftp.  For each command you want to allow, use a new line and option. To allow all commands, use the special value of *.
+.PP
+Note: Modern OpenSSH (9.0+) uses the SFTP protocol by default for scp. If scp or SFTP clients (e.g., WinSCP, FileZilla) fail to connect through sudosh, ensure the sftp-server path is correct and that \fBsftp-server\fR (or \fBinternal-sftp\fR) is available. You may need to add:
+.PP
+-c arg allow = /usr/lib/openssh/sftp-server
+.PP
+The sftp-server path varies by distribution. Use \fBfind / -name sftp-server\fR to locate it. For legacy scp behavior, clients can use \fBscp -O\fR (uppercase O) to force the old RCP protocol.
 .RE
 .IP clearenvironment
 .RS
@@ -71,6 +77,10 @@ syslog.facility         = LOG_LOCAL2
 -c arg allow = scp
 .RE
 -c arg allow = rsync
+.RE
+-c arg allow = /usr/lib/openssh/sftp-server
+.RE
+-c arg allow = /usr/libexec/openssh/sftp-server
 
 
 # Don't preserve environment variables

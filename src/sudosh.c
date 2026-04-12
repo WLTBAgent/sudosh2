@@ -581,7 +581,7 @@ static void rawmode(int ttyfd) {
   termnew.c_iflag = BRKINT | IXON | IXANY;
   termnew.c_oflag = 0;
   termnew.c_cflag = termorig.c_cflag;
-  termnew.c_lflag &= ~ECHO;
+  termnew.c_lflag = 0;
 
 #ifdef TCSETS
   (void)ioctl(ttyfd, TCSETS, &termnew);
