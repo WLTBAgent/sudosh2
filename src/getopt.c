@@ -69,19 +69,19 @@ the executable file might be covered by the GNU General Public License. */
 #include <stdlib.h>
 #endif /* GNU C library.  */
 
+/*
+ * Modern systems provide getopt() in libc. Skip the entire bundled
+ * implementation to avoid symbol conflicts and duplicate definitions.
+ * Only compile bundled getopt on truly ancient systems.
+ */
+#if !defined(__GNU_LIBRARY__) && !defined(__linux__) && \
+    !defined(__FreeBSD__) && !defined(__OpenBSD__) && \
+    !defined(__NetBSD__) && !defined(__APPLE__) && \
+    !defined(__DragonFly__)
+
 /* This version of `getopt' appears to the caller like standard Unix `getopt'
    but it behaves differently for the user, since it allows the user
-   to intersperse the options with the other arguments.
-
-   As `getopt' works, it permutes the elements of ARGV so that,
-   when it is done, all the options precede everything else.  Thus
-   all application programs are extended to handle flexible argument order.
-
-   Setting the environment variable POSIXLY_CORRECT disables permutation.
-   Then the behavior is completely standard.
-
-   GNU application programs can use a third alternative mode in which
-   they can distinguish the relative order of options and other arguments.  */
+   to intersperse the options with the other arguments.  */
 
 #include "getopt.h"
 
@@ -682,3 +682,5 @@ getopt (argc, argv, optstring)
 }
 
 #endif /* _LIBC or not __GNU_LIBRARY__.  */
+
+#endif /* Modern systems — skip bundled getopt entirely */

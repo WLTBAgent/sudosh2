@@ -22,6 +22,32 @@
 extern "C" {
 #endif
 
+/*
+ * Modern systems (glibc 2.x, musl, BSDs, macOS) all provide getopt,
+ * getopt_long, and getopt_long_only in their system headers via <unistd.h>
+ * or <getopt.h>. Only use our bundled declarations on truly ancient systems
+ * that lack native getopt support.
+ *
+ * The old code declared `extern int getopt();` (K&R, no prototype) which
+ * conflicts with modern glibc's `int getopt(int, char *const *, const char *)`
+ * when both getopt.h and <unistd.h> are included (gcc-15/glibc-2.39+).
+ *
+ * Fixes: https://github.com/WLTBAgent/sudosh2/issues/53
+ */
+#if defined(__GNU_LIBRARY__) || defined(__linux__) || defined(__FreeBSD__) || \
+    defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__) || \
+    defined(__DragonFly__)
+
+/* Use system getopt — <unistd.h> provides getopt on glibc/musl systems.
+ * Some systems have a separate <getopt.h> for getopt_long. */
+#include <unistd.h>
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif
+
+#else
+/* Legacy/ancient systems — use bundled getopt declarations */
+
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
    the argument value is returned here.
@@ -94,14 +120,7 @@ extern "C" {
 #define optional_argument	2
 
 #if __STDC__
-#if defined(__GNU_LIBRARY__)
-/* Many other libraries have conflicting prototypes for getopt, with
-   differences in the consts, in stdlib.h.  To avoid compilation
-   errors, only prototype getopt for the GNU C library.  */
     extern int getopt(int argc, char *const *argv, const char *shortopts);
-#else				/* not __GNU_LIBRARY__ */
-    extern int getopt();
-#endif				/* not __GNU_LIBRARY__ */
     extern int getopt_long(int argc, char *const *argv,
 			   const char *shortopts,
 			   const struct option *longopts, int *longind);
@@ -110,7 +129,7 @@ extern "C" {
 				const struct option *longopts,
 				int *longind);
 
-/* Internal only.  Users should not call this directly.  */
+/* Internal only. Users should not call this directly.  */
     extern int _getopt_internal(int argc, char *const *argv,
 				const char *shortopts,
 				const struct option *longopts,
@@ -122,6 +141,8 @@ extern "C" {
 
     extern int _getopt_internal();
 #endif				/* not __STDC__ */
+
+#endif /* modern vs legacy systems */
 
 #ifdef	__cplusplus
 }

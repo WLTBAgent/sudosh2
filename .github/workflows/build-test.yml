@@ -1,0 +1,90 @@
+name: Build Test Suite
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag: ubuntu:24.04
+            pkg: apt
+            desc: Ubuntu 24.04 LTS
+          - tag: ubuntu:22.04
+            pkg: apt
+            desc: Ubuntu 22.04 LTS
+          - tag: debian:12
+            pkg: apt
+            desc: Debian 12 Bookworm
+          - tag: fedora:41
+            pkg: dnf
+            desc: Fedora 41
+          - tag: fedora:40
+            pkg: dnf
+            desc: Fedora 40
+          - tag: rockylinux:9
+            pkg: dnf
+            desc: Rocky Linux 9
+          - tag: almalinux:9
+            pkg: dnf
+            desc: AlmaLinux 9
+          - tag: alpine:3.21
+            pkg: apk
+            desc: Alpine 3.21
+          - tag: archlinux:latest
+            pkg: pacman
+            desc: Arch Linux
+          - tag: opensuse/leap:15.6
+            pkg: zypper
+            desc: openSUSE Leap 15.6
+          - tag: gentoo/stage3:latest
+            pkg: emerge
+            desc: Gentoo (gcc-14+)
+
+    name: "Build: ${{ matrix.desc }}"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build in Docker (${{ matrix.desc }})
+        run: |
+          case "${{ matrix.pkg }}" in
+            apt)
+              INSTALL="apt-get update && apt-get install -y build-essential autoconf automake"
+              ;;
+            dnf)
+              INSTALL="dnf install -y gcc make autoconf automake"
+              ;;
+            apk)
+              INSTALL="apk add --no-cache build-base autoconf automake musl-dev"
+              ;;
+            pacman)
+              INSTALL="pacman -Syu --noconfirm base-devel autoconf automake"
+              ;;
+            zypper)
+              INSTALL="zypper -n refresh && zypper -n install gcc make autoconf automake"
+              ;;
+            emerge)
+              INSTALL="emerge --sync 2>/dev/null; emerge -q sys-devel/gcc sys-devel/autoconf sys-devel/automake"
+              ;;
+          esac
+
+          cat > Dockerfile.test <<EOF
+          FROM ${{ matrix.tag }}
+          RUN ${INSTALL}
+          COPY . /build/
+          RUN cd /build && autoreconf -fi 2>/dev/null; ./configure && make clean && make
+          RUN cd /build && if [ -f src/sudosh ]; then src/sudosh -h 2>&1 || true; fi
+          EOF
+
+          docker build -f Dockerfile.test -t sudosh2-test .
+
+      - name: Clean up
+        if: always()
+        run: docker rmi sudosh2-test 2>/dev/null || true
