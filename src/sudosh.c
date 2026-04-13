@@ -36,6 +36,9 @@ PURPOSE.  See the Open Software License for details.
 #ifndef FS_APPEND_FL
 #define FS_APPEND_FL 0x00000020
 #endif
+#ifndef FS_IMMUTABLE_FL
+#define FS_IMMUTABLE_FL 0x00000010
+#endif
 #endif
 #endif
 
